@@ -1,79 +1,85 @@
 package com.todo.data
 
-import android.content.Context
-import androidx.room.Room
-import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry
 import com.todo.dao.ThoughtsDao
-import com.todo.db.AppDB
 import com.todo.model.ThoughtsEntity
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
+
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.withTimeoutOrNull
+import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.util.UUID
-import kotlinx.coroutines.test.runTest
-import org.junit.After
-import org.junit.Assert.assertEquals
-import org.junit.Before
-import org.junit.runner.RunWith
-import java.io.IOException
 
-@RunWith(AndroidJUnit4::class)
 class ThoughtsRepositoryTest {
 
-    private lateinit var thoughtsDao: ThoughtsDao
-    private lateinit var db: AppDB
-
-//    private val appDB: AppDB = Room.inMemoryDatabaseBuilder(
-//        ApplicationProvider.getApplicationContext(),
-//        AppDB::class.java
-//    ).build()
-
-//    private val dao = appDB.thoughtsDao()
-//    private val thoughtsRepo: ThoughtsRepo = ThoughtsRepository(thoughtsDao)
-
-
-    @Before
-    fun createDb() {
-//        val context = ApplicationProvider.getApplicationContext<Context>()
-        val context = InstrumentationRegistry.getInstrumentation().targetContext
-        db = Room.inMemoryDatabaseBuilder(
-            context,
-            AppDB::class.java
-        ).build()
-        thoughtsDao = db.thoughtsDao()
-    }
-
-    @After
-    @Throws(IOException::class)
-    fun closeDb() {
-        db.close()
-    }
-
-
+    private val fakeDao = FakeDao()
+    private val thoughtsRepo = ThoughtsRepository(fakeDao)
 
 
     @Test
-    fun shouldBe_able_to_insert_thoughts() = runTest {
-        val thoughtsRepo: ThoughtsRepo = ThoughtsRepository(thoughtsDao)
-        val id = UUID.fromString("350bea47-d383-4d2b-8f6a-3a19b3c8b5c1")
-        val entity: ThoughtsEntity = entityBuilder(id, "I am thinking of learning to sing")
-
-        thoughtsRepo.insertThoughts(entity)
-        thoughtsRepo.findThought(id).collect { result ->
-            assertEquals(6, 2 + 2)
+    fun shouldBe_able_to_getAll_thoughts() = runTest {
+        withTimeoutOrNull(10) {
+            thoughtsRepo.getThoughts().collect { result ->
+                assertEquals(result, FakeDao.ExpectedResult)
+            }
         }
-
     }
 
+    @Test
+    fun shouldBe_able_to_find_thoughts() = runTest {
+        withTimeoutOrNull(10) {
+            thoughtsRepo.findThought(UUID.fromString("00f057c6-2552-46be-a1ac-d73cbbc480f9")).collect { result ->
+                assertEquals(result,          ThoughtsEntity(
+                    UUID.fromString("00f057c6-2552-46be-a1ac-d73cbbc480f9"),
+                    "ContentOne",
+                    "2025-01-29T19:25:36.145562029Z"
+                ))
+            }
+        }
+    }
 
-    private fun entityBuilder(uuid: UUID, content: String): ThoughtsEntity{
-        return ThoughtsEntity(
-            uuid,
-            content,
-            "2025-01-29T19:25:36.145562029Z"
+}
+
+
+class FakeDao : ThoughtsDao {
+    override suspend fun insert(thoughts: ThoughtsEntity) {
+        TODO("Not yet implemented")
+    }
+
+    override fun getAll(): Flow<List<ThoughtsEntity>> {
+        return flowOf<List<ThoughtsEntity>>(
+            ExpectedResult
         )
     }
 
+    override suspend fun delete(thoughts: ThoughtsEntity) {
+        TODO("Not yet implemented")
+    }
 
+    override fun find(id: UUID): Flow<ThoughtsEntity> {
+        return flowOf<ThoughtsEntity>(
+            ThoughtsEntity(
+                UUID.fromString("00f057c6-2552-46be-a1ac-d73cbbc480f9"),
+                "ContentOne",
+                "2025-01-29T19:25:36.145562029Z"
+            )
+        )
+    }
+
+    companion object {
+        val ExpectedResult =  listOf(
+            ThoughtsEntity(
+                UUID.fromString("00f057c6-2552-46be-a1ac-d73cbbc480f9"),
+                "ContentOne",
+                "2025-01-29T19:25:36.145562029Z"
+            ),
+            ThoughtsEntity(
+                UUID.fromString("01f057c6-2552-46be-a1ac-d73cbbc480f9"),
+                "ContentTwo",
+                "2025-01-29T19:25:36.145562029Z"
+            )
+        )
+    }
 
 }
