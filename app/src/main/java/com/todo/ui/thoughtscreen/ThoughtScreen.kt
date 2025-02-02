@@ -26,7 +26,10 @@ import java.time.OffsetDateTime
 
 
 @Composable
-fun ThoughtScreen(modifier: Modifier = Modifier, thoughtsViewModel: ThoughtsViewModel = viewModel(factory = ThoughtsViewModel.Factory)){
+fun ThoughtScreen(
+        modifier: Modifier = Modifier,
+        thoughtsViewModel: ThoughtsViewModel = viewModel(factory = ThoughtsViewModel.Factory
+        )){
     val state = thoughtsViewModel.uiState.collectAsState().value
 
     if(state.isEmpty()){
