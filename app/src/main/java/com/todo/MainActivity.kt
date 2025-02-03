@@ -34,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.todo.ui.addScreen.AddThoughtScreen
 import com.todo.ui.theme.TodoTheme
 import com.todo.ui.thoughtscreen.ThoughtScreen
 
@@ -80,7 +81,7 @@ class MainActivity : ComponentActivity() {
                         },
                         modifier = Modifier.fillMaxSize()
                     ) { innerPadding ->
-                        ThoughtScreen(Modifier.padding(innerPadding))
+                        AddThoughtScreen(Modifier.padding(innerPadding))
                     }
                 }
             }
