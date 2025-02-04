@@ -1,5 +1,7 @@
 package com.todo.ui.addScreen
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -20,28 +22,36 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.todo.ui.theme.TodoTheme
+import java.util.UUID
 
 
+
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AddThoughtScreen(
     modifier: Modifier = Modifier,
-    addThoughtsViewModel: AddThoughtsViewModel = viewModel()
+    addThoughtsViewModel: AddThoughtsViewModel = viewModel(factory = AddThoughtsViewModel.Factory)
 ){
     val stateFlow = addThoughtsViewModel.uiState
     val uiState = stateFlow.collectAsState()
 
     Fields(
+        modifier,
         { userInput -> addThoughtsViewModel.updateState(userInput)},
-        uiState.value,
-        modifier
+        uiState.value.content,
+        {id ->
+            addThoughtsViewModel.create(id)
+            addThoughtsViewModel.updateState("")
+        }
     )
 }
 
 @Composable
 fun Fields(
+     modifier: Modifier = Modifier,
      handleValueChange: (value: String) -> Unit,
      fieldValue: String,
-     modifier: Modifier = Modifier
+     handleButtonClick: (UUID) -> Unit = {},
 ){
     Column(
         modifier.fillMaxSize().background(MaterialTheme.colorScheme.scrim),
@@ -55,7 +65,7 @@ fun Fields(
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
         )
         Spacer(Modifier.size(10.dp))
-        OutlinedButton(onClick = {}) {
+        OutlinedButton(onClick = { handleButtonClick(UUID.randomUUID()) }) {
             Text("Create")
         }
     }
@@ -63,12 +73,15 @@ fun Fields(
 
 @Preview(showBackground = true)
 @Composable
-fun FieldsPreview(modifier: Modifier = Modifier,  viewModel: AddThoughtsViewModel = viewModel()){
+fun FieldsPreview(
+    modifier: Modifier = Modifier,
+    viewModel: AddThoughtsViewModel = viewModel(factory = AddThoughtsViewModel.Factory)
+){
     TodoTheme {
         Fields(
+            modifier,
             { state -> viewModel.updateState(state)} ,
-            viewModel.uiState.collectAsState().value ,
-            modifier
+            viewModel.uiState.collectAsState().value.content
         )
     }
 }

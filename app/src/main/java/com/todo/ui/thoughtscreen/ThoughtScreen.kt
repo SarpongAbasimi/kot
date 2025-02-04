@@ -2,8 +2,11 @@ package com.todo.ui.thoughtscreen
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -24,26 +27,26 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.todo.ui.theme.TodoTheme
 import java.time.OffsetDateTime
 
-
+@Preview
 @Composable
 fun ThoughtScreen(
         modifier: Modifier = Modifier,
-        thoughtsViewModel: ThoughtsViewModel = viewModel(factory = ThoughtsViewModel.Factory
-        )){
+        thoughtsViewModel: ThoughtsViewModel = viewModel(factory = ThoughtsViewModel.Factory)){
     val state = thoughtsViewModel.uiState.collectAsState().value
 
     if(state.isEmpty()){
         Text(
-            "You currently don't have any thoughts"
+            "You currently don't have any thoughts",
+            color = Color.Black,
+            modifier = modifier
         )
     } else {
-        LazyColumn {
+        LazyColumn(modifier = modifier) {
             items(items = state, key = {it.id}) { thoughts ->
                 ThoughtCard(
-                    thoughts.content,
-                    thoughts.createdAt,
-                    modifier
-                )
+                    thought = thoughts.content,
+                    createdAt = thoughts.createdAt)
+
             }
         }
     }
@@ -51,34 +54,36 @@ fun ThoughtScreen(
 
 @Composable
 private fun ThoughtCard(
+    modifier: Modifier = Modifier,
     thought: String,
     createdAt: String,
-    modifier: Modifier = Modifier
 ){
     Card(
         colors = CardDefaults.cardColors(
             containerColor = Color(2, 77, 223),
         ),
-        modifier = modifier.size(
-            width = 240.dp,
+        modifier = modifier.height(
             height = 100.dp
-        ),
+        ).fillMaxWidth().padding(10.dp),
         shape = CardDefaults.elevatedShape
     ) {
         Column(verticalArrangement = Arrangement.Center,
-            modifier = modifier.padding(5.dp))
+            modifier = modifier.padding(5.dp)
+        )
         {
             Text(
                 thought,
                 color = Color.White,
                 fontFamily = FontFamily.Monospace,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+               modifier =  Modifier.padding(5.dp, 5.dp)
             )
             Text(
                 createdAt,
-                fontSize = 10.sp,
+                fontSize = 14.sp,
                 color = Color.White,
-                fontFamily = FontFamily.Serif
+                fontFamily = FontFamily.Serif,
+                modifier =  Modifier.padding(5.dp, 5.dp)
             )
         }
     }
@@ -90,8 +95,8 @@ private fun ThoughtCard(
 fun ThoughtsPreview(modifier: Modifier = Modifier){
     TodoTheme {
         ThoughtCard(
-            "I am thinking of learning how to code",
-            "${OffsetDateTime.now()}"
+            thought = "I am thinking of learning how to code",
+            createdAt =  "${OffsetDateTime.now()}"
         )
     }
 }
