@@ -1,5 +1,6 @@
 package com.todo
 
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performTextInput
@@ -62,6 +63,24 @@ class AddThoughtScreenTest {
         composeTestRule
             .onNodeWithText(createButton)
             .assertExists()
+
+    }
+
+    @Test
+    fun shouldDisableButtonWhenNoText(){
+        composeTestRule.setContent {
+            AddThoughtScreen(addThoughtsViewModel = viewModel)
+        }
+
+        val emptyUserInput: String = ""
+
+        composeTestRule
+            .onNodeWithText(inputLabel)
+            .performTextInput(emptyUserInput)
+
+        composeTestRule
+            .onNodeWithText(createButton)
+            .assertIsNotEnabled()
 
     }
 }
