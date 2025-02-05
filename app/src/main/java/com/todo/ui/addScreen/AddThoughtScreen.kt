@@ -9,8 +9,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -23,7 +24,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.todo.ui.theme.TodoTheme
 import java.util.UUID
-
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -65,7 +65,16 @@ fun Fields(
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
         )
         Spacer(Modifier.size(10.dp))
-        OutlinedButton(onClick = { handleButtonClick(UUID.randomUUID()) }) {
+        FilledTonalButton(
+            onClick = { handleButtonClick(UUID.randomUUID()) },
+            enabled = fieldValue.isNotEmpty(),
+            colors = ButtonColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
+                disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant 
+            )
+        ) {
             Text("Create")
         }
     }
