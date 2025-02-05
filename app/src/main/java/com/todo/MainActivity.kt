@@ -75,6 +75,16 @@ class MainActivity : ComponentActivity() {
                                             Modifier.size(40.dp)
                                         )
                                     }
+                                },
+                                floatingActionButton = {
+                                    FloatingActionButton(
+                                        onClick = {  },
+                                    ) {
+                                        Icon(
+                                            Icons.Filled.Add,
+                                            "Floating action button."
+                                        )
+                                    }
                                 }
                             )
                         },
