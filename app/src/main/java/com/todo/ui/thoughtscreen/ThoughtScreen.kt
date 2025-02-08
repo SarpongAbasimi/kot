@@ -53,7 +53,7 @@ fun ThoughtScreen(
                 ThoughtCard(
                     thought = thoughts.content,
                     createdAt = thoughts.createdAt,
-                    handleEditClick =  { navigateEdit(thoughts.id.toString()) }
+                    handleEditClick =  {navigateEdit(thoughts.id.toString()) }
                 )
 
             }
@@ -73,7 +73,7 @@ private fun ThoughtCard(
             containerColor = Color(2, 77, 223),
         ),
         modifier = modifier.height(
-            height = 150.dp
+            height = 100.dp
         ).fillMaxWidth().padding(10.dp),
         shape = CardDefaults.elevatedShape
     ) {

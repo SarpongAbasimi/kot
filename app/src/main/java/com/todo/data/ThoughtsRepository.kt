@@ -53,7 +53,7 @@ class ThoughtsRepository(private val dao: ThoughtsDao): ThoughtsRepo {
         try {
             dao.update(thoughts)
         } catch (error: Exception) {
-            println("Error whiles updating thought")
+            println("Error whiles updating thought: $error")
         }
     }
 

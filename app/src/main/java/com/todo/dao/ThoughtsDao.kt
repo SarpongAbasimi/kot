@@ -23,6 +23,6 @@ interface ThoughtsDao {
     @Query("SELECT * FROM thoughts where id = :id")
     fun find(id: UUID): Flow<ThoughtsEntity>
 
-    @Update
+    @Update(entity = ThoughtsEntity::class)
     fun update(thoughts: ThoughtsEntity): Unit
 }

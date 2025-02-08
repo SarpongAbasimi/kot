@@ -29,16 +29,15 @@ class EditThoughtViewModel(private val thoughtsRepo: ThoughtsRepo) : ViewModel()
         }
     }
 
-    fun updateThought(uuid: UUID, time: String){
-        viewModelScope.launch {
-            thoughtsRepo.updateThought(
-                ThoughtsEntity(
-                    uuid,
-                    uiState.value.content,
-                    time
-                )
+    suspend fun updateThought(uuid: UUID, time: String){
+        thoughtsRepo.updateThought(
+            ThoughtsEntity(
+                uuid,
+                uiState.value.content,
+                time
             )
-        }
+        )
+
     }
 
     companion object {

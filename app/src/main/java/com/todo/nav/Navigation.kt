@@ -2,6 +2,7 @@ package com.todo.nav
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavBackStackEntry
@@ -13,6 +14,7 @@ import androidx.navigation.navArgument
 import com.todo.ui.addScreen.AddThoughtScreen
 import com.todo.ui.editScreen.EditThoughtScreen
 import com.todo.ui.thoughtscreen.ThoughtScreen
+import java.util.UUID
 
 
 sealed interface NavNames {
@@ -43,7 +45,7 @@ fun Navigation(modifier: Modifier = Modifier, controller: NavHostController){
     NavHost(navController = controller, startDestination = "home"){
         composable(Home.name()) {
             ThoughtScreen(modifier, navigateEdit = {
-                controller.navigate("${Edit.name()}/$id")
+                controller.navigate("${Edit.name()}/$it")
             })
         }
 
@@ -52,10 +54,19 @@ fun Navigation(modifier: Modifier = Modifier, controller: NavHostController){
         }
 
         composable(
-            "${Edit.name()}/{id}",
-            arguments = listOf(navArgument("id", builder = { NavType.StringType }))
+            "${Edit.name()}/{key}",
+            arguments = listOf(navArgument("key", builder = { NavType.StringType }))
         ){ backStackEntry: NavBackStackEntry ->
-            EditThoughtScreen(modifier)
+            val thoughtsId = backStackEntry.arguments?.getString("key")
+
+            if(thoughtsId.isNullOrEmpty()) {
+                Text("Sorry, resource can't be found")
+            } else {
+                EditThoughtScreen(
+                    modifier,
+                    thoughtId = UUID.fromString(thoughtsId)
+                )
+            }
         }
     }
 }

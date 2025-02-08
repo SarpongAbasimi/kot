@@ -21,6 +21,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.time.OffsetDateTime
 import java.util.UUID
 
@@ -30,7 +33,8 @@ import java.util.UUID
 @Composable
 fun EditThoughtScreen(
     modifier: Modifier = Modifier,
-    editThoughtsViewModel: EditThoughtViewModel = viewModel(factory = EditThoughtViewModel.Factory)
+    editThoughtsViewModel: EditThoughtViewModel = viewModel(factory = EditThoughtViewModel.Factory),
+    thoughtId: UUID
 ){
     val addState = editThoughtsViewModel.uiState.collectAsState()
     val uiState = addState.value
@@ -39,9 +43,11 @@ fun EditThoughtScreen(
         modifier,
         { userInput -> editThoughtsViewModel.updateState(userInput)},
         uiState.content,
-        { id ->
-            editThoughtsViewModel.updateThought(id, OffsetDateTime.now().toString())
-            editThoughtsViewModel.updateState("")
+        {
+            CoroutineScope(Dispatchers.IO).launch {
+                editThoughtsViewModel.updateThought(thoughtId, OffsetDateTime.now().toString())
+                editThoughtsViewModel.updateState("")
+            }
         }
     )
 }
@@ -52,7 +58,7 @@ fun Fields(
     modifier: Modifier = Modifier,
     handleValueChange: (value: String) -> Unit,
     fieldValue: String,
-    handleButtonClick: (UUID) -> Unit = {},
+    handleButtonClick: () -> Unit = {},
 ){
     Column(
         modifier.fillMaxSize().background(MaterialTheme.colorScheme.scrim),
@@ -67,7 +73,7 @@ fun Fields(
         )
         Spacer(Modifier.size(10.dp))
         FilledTonalButton(
-            onClick = { handleButtonClick(UUID.randomUUID()) },
+            onClick = { handleButtonClick() },
             enabled = fieldValue.isNotEmpty(),
             colors = ButtonColors(
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
