@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Update
 import com.todo.model.ThoughtsEntity
 import kotlinx.coroutines.flow.Flow
 import java.util.UUID
@@ -21,4 +22,7 @@ interface ThoughtsDao {
 
     @Query("SELECT * FROM thoughts where id = :id")
     fun find(id: UUID): Flow<ThoughtsEntity>
+
+    @Update
+    fun update(thoughts: ThoughtsEntity): Unit
 }

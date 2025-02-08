@@ -29,6 +29,14 @@ class FakeRepo : ThoughtsRepo {
         )
     }
 
+    override suspend fun updateThought(thoughts: ThoughtsEntity) {
+        ThoughtsEntity(
+            UUID.fromString("00f057c6-2552-46be-a1ac-d73cbbc480f9"),
+            thoughts.content,
+            "2025-01-29T19:25:36.145562029Z"
+        )
+    }
+
 
     companion object {
         val ExpectedResult =  listOf(
