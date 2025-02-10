@@ -55,6 +55,7 @@ dependencies {
     implementation(libs.androidx.room.kts)
     implementation(libs.core.ktx)
     implementation(libs.androidx.junit.ktx)
+    implementation(libs.androidxNavigation)
     ksp(libs.room.compiler)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.junit)

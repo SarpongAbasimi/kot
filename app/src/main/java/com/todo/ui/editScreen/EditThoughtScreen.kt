@@ -1,4 +1,4 @@
-package com.todo.ui.addScreen
+package com.todo.ui.editScreen
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -19,39 +19,46 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.todo.ui.theme.TodoTheme
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.time.OffsetDateTime
 import java.util.UUID
+
 
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun AddThoughtScreen(
+fun EditThoughtScreen(
     modifier: Modifier = Modifier,
-    addThoughtsViewModel: AddThoughtsViewModel = viewModel(factory = AddThoughtsViewModel.Factory)
+    editThoughtsViewModel: EditThoughtViewModel = viewModel(factory = EditThoughtViewModel.Factory),
+    thoughtId: UUID
 ){
-    val stateFlow = addThoughtsViewModel.uiState
-    val uiState = stateFlow.collectAsState()
+    val addState = editThoughtsViewModel.uiState.collectAsState()
+    val uiState = addState.value
 
     Fields(
         modifier,
-        { userInput -> addThoughtsViewModel.updateState(userInput)},
-        uiState.value.content,
-        {id ->
-            addThoughtsViewModel.create(id)
-            addThoughtsViewModel.updateState("")
+        { userInput -> editThoughtsViewModel.updateState(userInput)},
+        uiState.content,
+        {
+            CoroutineScope(Dispatchers.IO).launch {
+                editThoughtsViewModel.updateThought(thoughtId, OffsetDateTime.now().toString())
+                editThoughtsViewModel.updateState("")
+            }
         }
     )
 }
 
+
 @Composable
 fun Fields(
-     modifier: Modifier = Modifier,
-     handleValueChange: (value: String) -> Unit,
-     fieldValue: String,
-     handleButtonClick: (UUID) -> Unit = {},
+    modifier: Modifier = Modifier,
+    handleValueChange: (value: String) -> Unit,
+    fieldValue: String,
+    handleButtonClick: () -> Unit = {},
 ){
     Column(
         modifier.fillMaxSize().background(MaterialTheme.colorScheme.scrim),
@@ -66,7 +73,7 @@ fun Fields(
         )
         Spacer(Modifier.size(10.dp))
         FilledTonalButton(
-            onClick = { handleButtonClick(UUID.randomUUID()) },
+            onClick = { handleButtonClick() },
             enabled = fieldValue.isNotEmpty(),
             colors = ButtonColors(
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
@@ -75,22 +82,7 @@ fun Fields(
                 disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant
             )
         ) {
-            Text("Create")
+            Text("Update")
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun FieldsPreview(
-    modifier: Modifier = Modifier,
-    viewModel: AddThoughtsViewModel = viewModel(factory = AddThoughtsViewModel.Factory)
-){
-    TodoTheme {
-        Fields(
-            modifier,
-            { state -> viewModel.updateState(state)} ,
-            viewModel.uiState.collectAsState().value.content
-        )
     }
 }

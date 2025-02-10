@@ -12,6 +12,7 @@ interface ThoughtsRepo {
    fun getThoughts(): Flow<List<ThoughtsEntity>>
    suspend fun deleteThough(thoughts: ThoughtsEntity): Unit
    fun findThought(id: UUID): Flow<ThoughtsEntity>
+   suspend fun updateThought(thoughts: ThoughtsEntity): Unit
 }
 
 
@@ -46,6 +47,14 @@ class ThoughtsRepository(private val dao: ThoughtsDao): ThoughtsRepo {
             .catch { error ->
                 println("Error finding thoughts $error")
             }
+    }
+
+    override suspend fun updateThought(thoughts: ThoughtsEntity) {
+        try {
+            dao.update(thoughts)
+        } catch (error: Exception) {
+            println("Error whiles updating thought: $error")
+        }
     }
 
 }
